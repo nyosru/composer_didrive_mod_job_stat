@@ -1,0 +1,23 @@
+{% set r = random(1, 1000) %}
+
+{%  for k,v in list1 %}
+    {#{  pa(v) }#}
+
+    <div class="day1 {%  if v.status == 'ok' %}day_ok{% elseif v.status == 'warn' %}day_warn{% else %}day_no{% endif %}" 
+         onclick="$('#sp_{{ k }}_{{ r }}').toggle('slow');"
+         >{{  v.head }}</div>
+    <span id="sp_{{ k }}_{{ r }}" style="display:none;" >
+        <br clear="all" />
+
+        {%  for k1 , v1 in v.days %}
+
+            <div class="day {% if v1 == 'yes' %}day_ok{%  elseif v1 == 'skip' %}day_null{% else %}day_no{% endif %}" >
+                {{  k1[8:2] }}.{{  k1[5:2] }}
+            </div>
+
+        {%  endfor %}
+
+        <br clear="all" >
+    </span>
+        
+{%  endfor %}

@@ -1,0 +1,117 @@
+<div class="container-fluid">
+    <div class="grid">
+
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-4 col-md-4 col-lg-4 col-xl-4" >
+                <div
+                    style="background-color: rgba(150,150,255,0.3); padding: 10px; border-radius: 10px;"
+                    >
+
+                    <form action="" method="get" >
+
+                        <h3>Параметры</h3>
+                        
+                        <br/>
+                        Точка продаж
+                        <br/>
+
+                        {% set sps = items__get(db,'sale_point') %}
+                        {#{ pa(sps) }#}
+
+                        <select name="d[sp_key_iiko]" 
+                                class="form-control"
+                                required="requered"
+                                >
+                            <option value=""></option>
+
+                            {%  for k,v in sps if v.id_tech_for_oborot is defined and v.head != 'default' %}
+                                <option value="{{ v.id_tech_for_oborot }}"
+                                        {% if get.d.sp_key_iiko is defined and get.d.sp_key_iiko == v.id_tech_for_oborot %} selected="selected" {% endif %}
+                                        >{{ v.head }}</option>
+                            {%  endfor %}
+
+                        </select>
+                        <br/>
+                        Дата
+                        <br/>
+                        <input type="date" 
+                               class="form-control"
+                               name="d[date]" value="{% if get.d.date is defined %}{{ get.d.date }}{% endif %}" 
+                               required="requered"
+                               />
+                        <br/>
+                        <br/>
+                        <center>
+                            
+                            <input type="hidden" name="level" value="{{ level }}" />
+                            <input type="hidden" name="option" value="{{ get.option }}" />
+                            
+                            <input type="submit" 
+                                   class="btn btn-success"
+                                   name="go" value="Показать расчёт" 
+                                   />
+                        </center>
+                    </form>
+
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 col-xl-8">
+
+                {% if get.d is defined %}
+                {{ show__oborots_raschet(db,get.d)|raw }}
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+{% if 1 == 2 %}
+
+    {% set mans = readItems2( db, '070.jobman' )  %}
+    {#{ pa(mans.data) }#}
+
+    {% set dolgnosts = readItems2( db, '061.dolgnost' )  %}
+    {#{ pa(dolgnosts.data) }#}
+
+    {% set users = di_getModersAccess( db ) %}
+    {#{ pa(users) }#}
+
+    {% set import_user = get_users_from_import() %}
+    {#{ pa(import_user) }#}
+
+    {#{ pa(list) }#}
+
+    <div class="container-fluid">
+        <div class="grid">
+
+            {# list #}
+            {# если редактирование, то показываем форму редактирования #}
+
+            {# папка в модуле #}
+            {# % set dir_di_mod = constant('dir_mods_mod_vers_didrive_tpl') % #}
+            {# папка на сайте в модуле #}
+            {% set dir_di_mod = constant('dir_site_module_nowlev_tpldidr') %}
+
+            {% if get.edit_id is defined and list.data[get.edit_id] is defined %}
+
+                {% include dir_di_mod~'body.form_add.htm' %}
+
+            {% else %}
+
+                {% include dir_di_mod~'body.form_add.htm' %}
+
+                {% if get.showonly is not defined %}
+                    {% include dir_di_mod~'body.list_items.htm' %}
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+    </div>
+
+{%  endif %}
