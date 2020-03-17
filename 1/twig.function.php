@@ -121,28 +121,34 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
 
 
     // \Nyos\mod\items::$show_sql = true;
+    
     \Nyos\mod\items::$var_ar_for_1sql[':date_start'] = $date_start;
     \Nyos\mod\items::$var_ar_for_1sql[':date_finish'] = $date_finish;
-
-    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid22 '
+    \Nyos\mod\items::$join_where = 
+            ' INNER JOIN `mitems-dops` mid22 '
             . ' ON mid22.id_item = mi.id '
             . ' AND mid22.name = \'date\' '
             . ' AND mid22.value_date BETWEEN :date_start AND :date_finish '
+            . ' INNER JOIN `mitems-dops` mid23 '
+            . ' ON mid23.id_item = mi.id '
+            . ' AND mid23.name = \'sale_point\' '
     ;
 
-    $norms = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_timeo);
+    $norms = \Nyos\mod\items::get($db, \Nyos\mod\jobdesc::$mod_timeo);
+    // $norms = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_timeo);
     // $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
     // \f\pa($norms);
 
-
     $ar1 = [];
     foreach ($norms as $v) {
+        // if( !empty($v['sale_point']) )
         $ar1[$v['sale_point']][$v['date']] = 1;
     }
 
     // \f\pa($ar1);
 
-    $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
+    // $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
+    $sps = \Nyos\mod\items::get($db, \Nyos\mod\jobdesc::$mod_sale_point);
 
     $all_sp = [];
 
@@ -169,6 +175,7 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
 
             // если дата больше текущей
             if ($df > $df_now) {
+                continue;
                 $all_sp[$sp['id']]['days'][$df] = 'skip';
                 // $all_sp[$sp['id']]['status'] = null;
             }
@@ -184,20 +191,28 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
                 
             if (empty($ar1[$sp['id']][$df])) {
                 $all_sp[$sp['id']]['days'][$df] = false;
-                if ($all_sp[$sp['id']]['status'] != 'warn') {
-                    $all_sp[$sp['id']]['status'] = 'no';
-                }
+                
+                // if ($all_sp[$sp['id']]['status'] == 'no') {
+                $all_sp[$sp['id']]['status'] = 'warn';
+                // }
+                
+//                if ($all_sp[$sp['id']]['status'] != 'warn') {
+//                    $all_sp[$sp['id']]['status'] = 'no';
+//                }
             } else {
                 $all_sp[$sp['id']]['days'][$df] = true;
-                if ($all_sp[$sp['id']]['status'] == 'no') {
-                    $all_sp[$sp['id']]['status'] = 'warn';
-                }
+//                if ($all_sp[$sp['id']]['status'] == 'no') {
+//                    $all_sp[$sp['id']]['status'] = 'warn';
+//                }
             }
+            
+            // $all_sp[$sp['id']]['status'] = 'warn';
                 
             }
         }
     }
 
+    // \f\pa($all_sp,2,'','all_sp');
     return $all_sp;
 
 //    if ($folder == '')
