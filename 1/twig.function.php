@@ -300,6 +300,7 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
 
             // если дата больше текущей
             if ($df > $df_now) {
+                continue;
                 $all_sp[$sp['id']]['days'][$df] = 'skip';
                 // $all_sp[$sp['id']]['status'] = null;
             }
@@ -308,14 +309,19 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
 
             if (empty($ar1[$sp['id']][$df])) {
                 $all_sp[$sp['id']]['days'][$df] = false;
-                if ($all_sp[$sp['id']]['status'] != 'warn') {
-                    $all_sp[$sp['id']]['status'] = 'no';
-                }
-            } else {
-                $all_sp[$sp['id']]['days'][$df] = true;
-                if ($all_sp[$sp['id']]['status'] == 'no') {
+                
+                if ($all_sp[$sp['id']]['status'] != 'no') {
                     $all_sp[$sp['id']]['status'] = 'warn';
                 }
+                
+//                if ($all_sp[$sp['id']]['status'] != 'warn') {
+//                    $all_sp[$sp['id']]['status'] = 'no';
+//                }
+            } else {
+                $all_sp[$sp['id']]['days'][$df] = true;
+//                if ($all_sp[$sp['id']]['status'] == 'no') {
+//                    $all_sp[$sp['id']]['status'] = 'warn';
+//                }
             }
 //                if (empty($ar1[$sp['id']][$df])) {
 //                    $all_sp[$sp['id']]['days'][$df] = 'no';
