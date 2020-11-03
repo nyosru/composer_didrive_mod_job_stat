@@ -45,7 +45,7 @@ class JOB_STAT {
                         // .' t.cold , '
                         // .' t.delivery, '
                         .' CASE
-                            WHEN t.delivery > 0 AND t.cold > 0 
+                            WHEN t.cold > 0 
                             THEN t.delivery + t.cold 
                             END timeo ,
 
