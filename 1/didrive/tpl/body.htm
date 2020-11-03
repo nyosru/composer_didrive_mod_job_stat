@@ -3,12 +3,6 @@
         <div class="row">
             <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
 
-                {#{ pa(get) }#}
-
-                {#
-                <a href="?level={{ get.level }}&option=oborots" class="btn btn-xs btn-light" >подгрузка оборотов</a>
-                #}
-
                 {% set kk_active = '' %}
 
                 {% set kk = 'index' %}
@@ -17,12 +11,21 @@
                 <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
                    {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
 
-                {% set kk = 'oborots_raschet' %}
-                {% set kk_name = 'подробный расчёт оборотов ТП' %}
+                {% if 1 == 2 %}
+                    
+                    {% set kk = 'oborots_raschet' %}
+                    {% set kk_name = 'подробный расчёт оборотов ТП' %}
 
-                <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
-                   {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
+                    <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                       {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
 
+                    {% set kk = 'job_tp' %}
+                    {% set kk_name = 'работа ТП' %}
+
+                    <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                       {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
+                       
+                {% endif %}
             </div>
         </div>
         <div class="row">

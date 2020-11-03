@@ -9,15 +9,23 @@
 // });
 // $twig->addFunction($function);
 // $function = new Twig_SimpleFunction('site_mod__check_norms_day', function ( $db, $date ) {
+//creatSecret
+$function = new Twig_SimpleFunction('job_stat__getstat', function ( $db, string $date ) {
+    return \Nyos\mod\JOB_STAT::getStat($db, $date);
+});
+$twig->addFunction($function);
+
+
+
 $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db, $date ) {
 
-    // \f\pa($date);
+// \f\pa($date);
 
     $date_start = date('Y-m-01', strtotime($date));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
 
-    // \Nyos\mod\items::$show_sql = true;
+// \Nyos\mod\items::$show_sql = true;
     \Nyos\mod\items::$var_ar_for_1sql[':date_start'] = $date_start;
     \Nyos\mod\items::$var_ar_for_1sql[':date_finish'] = $date_finish;
 
@@ -28,8 +36,8 @@ $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db,
     ;
 
     $norms = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_norms_day);
-    // $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
-    // \f\pa($norms);
+// $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
+// \f\pa($norms);
 
 
     $ar1 = [];
@@ -37,7 +45,7 @@ $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db,
         $ar1[$v['sale_point']][$v['date']] = 1;
     }
 
-    // \f\pa($ar1);
+// \f\pa($ar1);
 
     $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
     $df_now = date('Y-m-d', $_SERVER['REQUEST_TIME'] - 3600 * 24);
@@ -48,7 +56,7 @@ $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db,
         if (!empty($sp['head']) && $sp['head'] == 'default')
             continue;
 
-        // \f\pa($sp,'','','sp');
+// \f\pa($sp,'','','sp');
 
         if (empty($all_sp[$sp['id']]))
             $all_sp[$sp['id']] = ['id' => $sp['id'], 'head' => $sp['head'], 'status' => 'ok', 'days' => []];
@@ -60,7 +68,7 @@ $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db,
             if ($df > $date_finish)
                 break;
 
-            // если дата больше текущей
+// если дата больше текущей
 //            if ($df > $df_now) {
 //                $all_sp[$sp['id']]['days'][$df] = 'skip';
 //                $all_sp[$sp['id']]['status'] = null;
@@ -106,26 +114,27 @@ $function = new Twig_SimpleFunction('job_stat__check_norms_day', function ( $db,
 
 //    $file_cash = DR . '/sites/' . $folder . '/people.iiko';
 //    $massa = json_decode(file_get_contents($file_cash));
-    //\f\pa($massa);
+//\f\pa($massa);
 
     return $massa;
 });
 $twig->addFunction($function);
 
+
+
 $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db, $date ) {
 
-    // \f\pa($date);
+// \f\pa($date);
 
     $date_start = date('Y-m-01', strtotime($date));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
 
-    // \Nyos\mod\items::$show_sql = true;
-    
+// \Nyos\mod\items::$show_sql = true;
+
     \Nyos\mod\items::$var_ar_for_1sql[':date_start'] = $date_start;
     \Nyos\mod\items::$var_ar_for_1sql[':date_finish'] = $date_finish;
-    \Nyos\mod\items::$join_where = 
-            ' INNER JOIN `mitems-dops` mid22 '
+    \Nyos\mod\items::$join_where = ' INNER JOIN `mitems-dops` mid22 '
             . ' ON mid22.id_item = mi.id '
             . ' AND mid22.name = \'date\' '
             . ' AND mid22.value_date BETWEEN :date_start AND :date_finish '
@@ -135,19 +144,18 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
     ;
 
     $norms = \Nyos\mod\items::get($db, \Nyos\mod\jobdesc::$mod_timeo);
-    // $norms = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_timeo);
-    // $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
-    // \f\pa($norms);
+// $norms = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_timeo);
+// $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
+// \f\pa($norms);
 
     $ar1 = [];
     foreach ($norms as $v) {
-        // if( !empty($v['sale_point']) )
+// if( !empty($v['sale_point']) )
         $ar1[$v['sale_point']][$v['date']] = 1;
     }
 
-    // \f\pa($ar1);
-
-    // $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
+// \f\pa($ar1);
+// $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
     $sps = \Nyos\mod\items::get($db, \Nyos\mod\jobdesc::$mod_sale_point);
 
     $all_sp = [];
@@ -160,7 +168,7 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
         if (!empty($sp['head']) && $sp['head'] == 'default')
             continue;
 
-        // \f\pa($sp,'','','sp');
+// \f\pa($sp,'','','sp');
 
         if (empty($all_sp[$sp['id']]))
             $all_sp[$sp['id']] = ['id' => $sp['id'], 'head' => $sp['head'], 'status' => 'ok', 'days' => []];
@@ -173,13 +181,13 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
             if ($df > $date_finish)
                 break;
 
-            // если дата больше текущей
+// если дата больше текущей
             if ($df > $df_now) {
                 continue;
                 $all_sp[$sp['id']]['days'][$df] = 'skip';
-                // $all_sp[$sp['id']]['status'] = null;
+// $all_sp[$sp['id']]['status'] = null;
             }
-            // если дата раньше текущей, статусы ставим
+// если дата раньше текущей, статусы ставим
             else {
 
 //                if (empty($ar1[$sp['id']][$df])) {
@@ -188,31 +196,29 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
 //                } else {
 //                    $all_sp[$sp['id']]['days'][$df] = 'yes';
 //                }
-                
-            if (empty($ar1[$sp['id']][$df])) {
-                $all_sp[$sp['id']]['days'][$df] = false;
-                
-                // if ($all_sp[$sp['id']]['status'] == 'no') {
-                $all_sp[$sp['id']]['status'] = 'warn';
-                // }
-                
+
+                if (empty($ar1[$sp['id']][$df])) {
+                    $all_sp[$sp['id']]['days'][$df] = false;
+
+// if ($all_sp[$sp['id']]['status'] == 'no') {
+                    $all_sp[$sp['id']]['status'] = 'warn';
+// }
 //                if ($all_sp[$sp['id']]['status'] != 'warn') {
 //                    $all_sp[$sp['id']]['status'] = 'no';
 //                }
-            } else {
-                $all_sp[$sp['id']]['days'][$df] = true;
+                } else {
+                    $all_sp[$sp['id']]['days'][$df] = true;
 //                if ($all_sp[$sp['id']]['status'] == 'no') {
 //                    $all_sp[$sp['id']]['status'] = 'warn';
 //                }
-            }
-            
-            // $all_sp[$sp['id']]['status'] = 'warn';
-                
+                }
+
+// $all_sp[$sp['id']]['status'] = 'warn';
             }
         }
     }
 
-    // \f\pa($all_sp,2,'','all_sp');
+// \f\pa($all_sp,2,'','all_sp');
     return $all_sp;
 
 //    if ($folder == '')
@@ -236,7 +242,7 @@ $function = new Twig_SimpleFunction('job_stat__check_timeo_days', function ( $db
 
 //    $file_cash = DR . '/sites/' . $folder . '/people.iiko';
 //    $massa = json_decode(file_get_contents($file_cash));
-    //\f\pa($massa);
+//\f\pa($massa);
 
     return $massa;
 });
@@ -245,12 +251,12 @@ $twig->addFunction($function);
 
 $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $date ) {
 
-    // \f\pa($date);
+// \f\pa($date);
 
     $date_start = date('Y-m-01', strtotime($date));
     $date_finish = date('Y-m-d', strtotime($date_start . ' +1 month -1 day'));
 
-    // \Nyos\mod\items::$show_sql = true;
+// \Nyos\mod\items::$show_sql = true;
     \Nyos\mod\items::$var_ar_for_1sql[':date_start'] = $date_start;
     \Nyos\mod\items::$var_ar_for_1sql[':date_finish'] = $date_finish;
 
@@ -261,8 +267,8 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
     ;
 
     $ocenki = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_ocenki_days);
-    // $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
-    // \f\pa($norms);
+// $norms = \Nyos\mod\items::getItemsSimple($db, \Nyos\mod\jobdesc::$mod_norms_day);
+// \f\pa($norms);
 
 
     $ar1 = [];
@@ -270,7 +276,7 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
         $ar1[$v['sale_point']][$v['date']] = 1;
     }
 
-    // \f\pa($ar1);
+// \f\pa($ar1);
 
     $sps = \Nyos\mod\items::getItemsSimple3($db, \Nyos\mod\jobdesc::$mod_sale_point);
 
@@ -284,12 +290,12 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
         if (!empty($sp['head']) && $sp['head'] == 'default')
             continue;
 
-        // \f\pa($sp,'','','sp');
+// \f\pa($sp,'','','sp');
 
         if (empty($all_sp[$sp['id']]))
             $all_sp[$sp['id']] = ['id' => $sp['id'], 'head' => $sp['head'], 'status' => 'ok', 'days' => []];
 
-        // $all_sp[$sp['id']]['status'] = 'no';
+// $all_sp[$sp['id']]['status'] = 'no';
 
         for ($d = 0; $d <= 31; $d++) {
 
@@ -298,31 +304,31 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
             if ($df > $date_finish)
                 break;
 
-            // если дата больше текущей
+// если дата больше текущей
             if ($df > $df_now) {
                 continue;
                 $all_sp[$sp['id']]['days'][$df] = 'skip';
-                // $all_sp[$sp['id']]['status'] = null;
+// $all_sp[$sp['id']]['status'] = null;
             }
-            // если дата раньше текущей, статусы ставим
+// если дата раньше текущей, статусы ставим
             else {
 
-            if (empty($ar1[$sp['id']][$df])) {
-                $all_sp[$sp['id']]['days'][$df] = false;
-                
-                if ($all_sp[$sp['id']]['status'] != 'no') {
-                    $all_sp[$sp['id']]['status'] = 'warn';
-                }
-                
+                if (empty($ar1[$sp['id']][$df])) {
+                    $all_sp[$sp['id']]['days'][$df] = false;
+
+                    if ($all_sp[$sp['id']]['status'] != 'no') {
+                        $all_sp[$sp['id']]['status'] = 'warn';
+                    }
+
 //                if ($all_sp[$sp['id']]['status'] != 'warn') {
 //                    $all_sp[$sp['id']]['status'] = 'no';
 //                }
-            } else {
-                $all_sp[$sp['id']]['days'][$df] = true;
+                } else {
+                    $all_sp[$sp['id']]['days'][$df] = true;
 //                if ($all_sp[$sp['id']]['status'] == 'no') {
 //                    $all_sp[$sp['id']]['status'] = 'warn';
 //                }
-            }
+                }
 //                if (empty($ar1[$sp['id']][$df])) {
 //                    $all_sp[$sp['id']]['days'][$df] = 'no';
 //                    $all_sp[$sp['id']]['status'] = 'no';
@@ -356,7 +362,7 @@ $function = new Twig_SimpleFunction('job_stat__check_ocenka', function ( $db, $d
 
 //    $file_cash = DR . '/sites/' . $folder . '/people.iiko';
 //    $massa = json_decode(file_get_contents($file_cash));
-    //\f\pa($massa);
+//\f\pa($massa);
 
     return $massa;
 });
@@ -388,7 +394,7 @@ if (1 == 1) {
 
         $file_cash = DR . '/sites/' . $folder . '/people.iiko';
         $massa = json_decode(file_get_contents($file_cash));
-        //\f\pa($massa);
+//\f\pa($massa);
 
         return $massa;
     });
@@ -408,7 +414,7 @@ if (1 == 1) {
 
         $file_cash = DR . '/sites/' . $folder . '/people.iiko';
         $massa = json_decode(file_get_contents($file_cash), true);
-        //\f\pa($massa);
+//\f\pa($massa);
 
         $ret = '<p>c IIKO получено записей сотрудников ' . sizeof($massa) . '</p>';
 
@@ -421,9 +427,9 @@ if (1 == 1) {
 //        ':folder' => $folder,
 //        ':mod' => '070.jobman'
 //    ));
-        // echo '<hr>наши люди<hr>';
+// echo '<hr>наши люди<hr>';
 //    $e = 1;
-        // смотрим инфу что на сайтте люди
+// смотрим инфу что на сайтте люди
 
         \f\timer::start(55);
 
@@ -443,7 +449,7 @@ if (1 == 1) {
         $ret .= '<h2>Добавляем сотрудников из </h2>';
 
 //    $e = 0;
-        // смотрим инфу с айки
+// смотрим инфу с айки
         foreach ($massa as $k => $v) {
 
 //        if ($e >= 20)
@@ -455,7 +461,7 @@ if (1 == 1) {
                 $indb[$v['id']] = $v;
             }
 
-            //      \f\pa($v);
+//      \f\pa($v);
         }
 
         $ret .= '<br/>новых записей ' . sizeof($indb);
@@ -473,8 +479,8 @@ if (1 == 1) {
             } else {
                 continue;
             }
-            // $new_people_dop = [];
-            // \f\pa($v);
+// $new_people_dop = [];
+// \f\pa($v);
 
             foreach ($v as $k1 => $v1) {
 
@@ -498,7 +504,7 @@ if (1 == 1) {
                 }
             }
 
-            //\f\pa($new_people);
+//\f\pa($new_people);
 
             \Nyos\mod\items::addNew($db, $folder, \Nyos\Nyos::$menu['070.jobman'], $new_people);
 
