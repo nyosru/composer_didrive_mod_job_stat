@@ -13,9 +13,65 @@ namespace Nyos\mod;
 //
 class JOB_STAT {
 
-    // public static $dir_img_server = false;
+    public static $var = 123;
 
-    public static function getStat($db, $date) {
+    public static function getStatInDb($db, $date, $date_finish = null) {
+
+        $ff = $db->prepare('SELECT 
+                f.sale_point,
+                f.srednee_oborot,
+                f.srednee_timeo,
+                sp.head sp
+            FROM mod_' . \f\translit(\Nyos\mod\JobDesc::$mod_stat_fix_month, 'uri2') . ' f 
+                LEFT JOIN mod_' . \f\translit(\Nyos\mod\JobDesc::$mod_sale_point, 'uri2') . ' sp ON f.sale_point = sp.id '
+                . ' WHERE f.date = :d1 AND f.date_finish = :d2 ');
+        $in2 = [
+            ':d1' => date('Y-m-d', strtotime($date)),
+            ':d2' => date('Y-m-d', strtotime($date_finish)),
+        ];
+        $ff->execute($in2);
+
+        if ($ff->rowCount() == 0) {
+            return false;
+        }
+
+
+        $return = [
+            'sp_oborot_srednee' => [],
+            'sps' => [],
+            'sp_t_srednee' => []
+        ];
+
+
+        while ($r = $ff->fetch()) {
+            $return['sp_oborot_srednee'][$r['sale_point']] = $r['srednee_oborot'];
+            $return['sps'][$r['sale_point']] = $r['sp'];
+            $return['sp_t_srednee'][$r['sale_point']] = $r['srednee_timeo'];
+        }
+
+        return $return;
+    }
+
+    public static function getStat($db, $date, $date_finish = null) {
+
+        $in = [
+            ':date1' => date('Y-m-01', strtotime($date))
+        ];
+
+        if (!empty($date_finish)) {
+            $in[':date2'] = date('Y-m-d', strtotime($date_finish));
+        } else {
+            $in[':date2'] = date('Y-m-d', strtotime($in[':date1'] . ' +1 month -1 day'));
+        }
+
+        
+        $ee = self::getStatInDb($db, $in[':date1'], $in[':date2']);
+        if ( !empty($ee) ) {
+            $ee['saved'] = 'da';
+            return $ee;
+        }
+
+
 
         $sql = 'SELECT '
 
@@ -42,15 +98,17 @@ class JOB_STAT {
                             THEN ROUND( o.oborot_server/( d.hours_all / p.kolvo_hour_in1smena ) , 1 )
                         END `day_oborot_in_all_hands`
                         , '
-                        // .' t.cold , '
-                        // .' t.delivery, '
-                        .' CASE
-                            WHEN t.cold > 0 
-                            THEN t.delivery + t.cold 
+                // .' t.cold , '
+                // .' t.delivery, '
+                . ' CASE
+                            WHEN t.cold > 0 AND t.delivery > 0 
+                                THEN t.delivery + t.cold 
+                            WHEN t.cold > 0 AND t.delivery_a > 0 AND t.delivery_b > 0 
+                                THEN t.delivery_a + t.delivery_b + t.cold
                             END timeo ,
 
                         sp.head sale_point_name
-                        
+
                     FROM 
                         mod_sp_ocenki_job_day d
 
@@ -65,12 +123,6 @@ class JOB_STAT {
 
                     ;';
         $ff = $db->prepare($sql);
-
-        $in = [
-            ':date1' => date('Y-m-01', strtotime($date))
-        ];
-        $in[':date2'] = date('Y-m-d', strtotime($in[':date1'] . ' +1 month -1 day'));
-
         $ff->execute($in);
 
         $res_sp_date = [];
@@ -104,7 +156,6 @@ class JOB_STAT {
 
 
 
-
         foreach ($res['sps'] as $sp => $sp_name) {
 
             // echo '<br/><br/>' . $sp . '<br/>';
@@ -122,21 +173,31 @@ class JOB_STAT {
                     $res['sp_oborot_srednee0'][$sp][] = $res_sp_date[$sp][$date];
                     $res['sp_timeo_srednee0'][$sp][] = $res_sp_t[$sp][$date];
                     // echo ' ++ ';
-                } else {
-                    $res['sp_status'][$sp] = false;
-                    // echo ' -- ';
                 }
+                //
+//                else {
+//                    $res['sp_status'][$sp] = false;
+//                    // echo ' -- ';
+//                }
             }
 
-            if ($res['sp_status'][$sp] === true) {
+            if (1 == 1 || $res['sp_status'][$sp] === true) {
                 $res1['sp_oborot_srednee'][$sp] = round(array_sum($res['sp_oborot_srednee0'][$sp]) / count($res['sp_oborot_srednee0'][$sp]), 1);
                 $res1['sp_t_srednee'][$sp] = round(array_sum($res['sp_timeo_srednee0'][$sp]) / count($res['sp_timeo_srednee0'][$sp]), 1);
+
+                \Nyos\mod\items::add($db, \Nyos\mod\JobDesc::$mod_stat_fix_month, [
+                    'sale_point' => $sp,
+                    'date' => $in[':date1'],
+                    'date_finish' => $in[':date2'],
+                    'srednee_timeo' => $res1['sp_t_srednee'][$sp],
+                    'srednee_oborot' => $res1['sp_oborot_srednee'][$sp]
+                        // 'srednee_money_in_hand_all' => $res1['sp_t_srednee'][$sp],
+                ]);
             }
-            
         }
 
         $res1['all'] = $res['all'];
-        
+
         return $res1;
     }
 
