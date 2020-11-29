@@ -1,0 +1,241 @@
+{% set sps = items__get( db, 'sale_point', 'show','sort_asc' )  %}
+{#{{ pa(sps) }}#}
+
+<div class="container-fluid">
+    <div class="grid">
+
+        <div class="row" >
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" 
+                 style="padding:15px 20px;"
+                 >
+
+                {# верхние кнопки даты и скрыть показать даты #}
+                {% if 1 == 1 %}
+
+                    {#
+                    &nbsp;
+                    <button onclick="$('body .job_hour').toggle('slow');" class="btn btn-xs btn-light">Показать/скрыть колчичество часов в смене</button>
+                    #}
+
+                    {# 2019 #}
+                    {#% set year = 2019 %#}
+
+                    {% set now_year = "now"|date('Y')%}
+                    {#{ now_year }#}
+
+                    {% set now_mont = "now"|date('m')%}
+                    {#{ now_mont }#}
+
+                    {% set gets = get %}
+
+                    {% for year in range(low=2020, high=2030, step=1) if iy <= now_year %}
+
+                        {# {{ iy }}<br/> #}
+
+                        {% for i in range(low=1, high=12, step=1) if ( ( year == 2020 and i >= 9 ) or ( year > 2020 and year <= now_year ) ) and ( year != now_year or ( year == now_year and i <= ( now_mont + 1 ) ) ) %}
+
+                            {% if i < 10 %}
+                                {% set i2 = '0'~i %}
+                            {% else %}
+                                {% set i2 = i %}
+                            {% endif %}
+
+                            {% set gets = gets|merge({'year':year,'month':i2}) %}
+
+                            <a  
+                                href="?{{ http_build_query(gets) }}"  
+                                xhref="?level={% if get.level is defined %}{{ get.level }}{% else %}000.index{% endif %}&year={{ year }}&month={{ i2 }}"  
+
+                                style="margin-right:5px;"
+
+                                class="btn btn-xs 
+                                {% if get.year is defined and get.month is defined  and get.year == year and get.month == i2 %}
+                                    btn-success
+                                {% elseif get.year is not defined and get.month is not defined  and now|date('Y') == year and i2 == now|date('m') %}
+                                    btn-success
+                                {% else %}
+                                    btn-light
+                                {% endif %}
+                                " >
+
+                                {% if i2 == 01 %}
+                                    январь
+                                {% elseif i2 == 02 %}
+                                    февраль
+                                {% elseif i2 == 03 %}
+                                    март
+                                {% elseif i2 == 04 %}
+                                    апрель
+                                {% elseif i2 == 05 %}
+                                    май
+                                {% elseif i2 == 06 %}
+                                    июнь
+                                {% elseif i2 == 07 %}
+                                    июль
+                                {% elseif i2 == 08 %}
+                                    август
+                                {% elseif i2 == 09 %}
+                                    сентябрь
+                                {% elseif i2 == 10 %}
+                                    октябрь
+                                {% elseif i2 == 11 %}
+                                    ноябрь
+                                {% elseif i2 == 12 %}
+                                    декабрь
+                                {% endif %}
+                                {{ year }}</a>
+
+                        {% endfor %}
+
+                    {% endfor %}
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <style>
+            .day1{ cursor: pointer; display: inline-block; float: left; font-weight: bold; padding: 2px 5px; margin: 1px 3px; }
+            .day1.day_ok{ background-color: rgba(0,255,0,0.3); }
+            .day1.day_warn{ background-color: rgba(255,255,0,0.4); }
+            .day1.day_no{ background-color: rgba(255,0,0,0.3); }
+
+            .day{ float:left; padding: 2px 5px; margin: 1px; }
+            .day.day_ok{ background-color: rgba(0,255,0,0.1); }
+            .day.day_warn{ background-color: rgba(255,255,0,0.1); }
+            .day.day_no{ background-color: rgba(255,0,0,0.1); }
+            .day.day_null{ background-color: rgba(0,0,0,0.1); }
+        </style>
+
+        {%  if get.year is defined and get.month is defined  %}
+            {% set year = get.year %}
+            {% set mont = get.month %}
+        {%  else %}
+            {% set year = now_year %}
+            {% set mont = now_mont %}
+        {% endif %}
+
+
+        {# заполненность параметров нормы дня #}
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
+                <h3>Статистика</h3>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12 col-sm-12" >
+                    {%  set list1 = job_stat__getstat( db, year~'-'~mont~'-05' ) %}
+                    {#{{ pa(list1) }}#}
+
+                    <table class="table table-bordered" >
+                        <thead>
+                            <tr>
+                                <th>Точка продаж</th>
+                                    {%  for k,v in sps %}
+                                    <th>{{ v.head }}</th>
+                                    {%  endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>всего зпл за месяц в руб вместе со стажерами</td>
+                                {%  for k,v in sps %}
+                                    <td>
+                                        -
+                                    </td>
+                                {%  endfor %}
+                            </tr>
+                            <tr>
+                                <td>средняя выручка в 1 руки вместе со стажерами</td>
+                                {%  for k,v in sps %}
+                                    <td>
+                                        {{ list1.sp_oborot_srednee[v.id] ?? '-' }}
+                                    </td>
+                                {%  endfor %}
+                            </tr>
+                            <tr>
+                                <td>среднее время ожид по всем цехам</td>
+                                {%  for k,v in sps %}
+                                    <td>
+                                        {{ list1.sp_t_srednee[v.id] ?? '-' }}
+                                    </td>
+                                {%  endfor %}
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            {# заполненность параметров нормы дня #}
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
+                    <h3>Параметры нормы дня</h3>
+                    <div style="line-height: 0.8rem;" >
+                        <small>
+                            <div style="background-color: rgba(255,0,0,0.1);" >крассное - плохо, не хватает данных,</div>
+                            <div style="background-color: rgba(255,255,0,0.1);" >жёлтое - заполнено, но не всё</div>
+                            <div style="background-color: rgba(0,255,0,0.1);" >зелёное - всё заполнено</div>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10 col-xl-10" >
+                    {%  set list1 = job_stat__check_norms_day( db, year~'-'~mont~'-05' ) %}
+                    {% include dir_mod_now_mod_ditpl~'body.index.block.htm' %}
+                </div>
+
+            </div>
+
+
+
+
+            {# время ожидания #}
+            <div class="row" data-aos="zoom-out-up" style="border-top: 2px solid #bebebe; margin-top: 15px; padding-top: 15px;">
+
+                <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
+                    <h3>Время ожидания</h3>
+                    <div style="line-height: 0.8rem;" >
+                        <small>
+                            <div style="background-color: rgba(255,0,0,0.1);" >крассное - не хватает данных,</div>
+                            <div style="background-color: rgba(255,255,0,0.1);" >жёлтое - заполнено, но не всё</div>
+                            <div style="background-color: rgba(0,255,0,0.1);" >зелёное - всё загружено</div>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10 col-xl-10" >
+                    {%  set list1 = job_stat__check_timeo_days( db, year~'-'~mont~'-05' ) %}
+                    {% include dir_mod_now_mod_ditpl~'body.index.block.htm' %}
+                </div>
+
+            </div>
+
+            {# автооценки #}
+            <div class="row" style="border-top: 2px solid #bebebe; margin-top: 15px; padding-top: 15px;">
+
+                <div class="col-xs-12 col-sm-3 col-md-2 col-lg-2 col-xl-2" >
+                    <h3>Автооценки</h3>
+                    <div style="line-height: 0.8rem;" >
+                        <small>
+                            <div style="background-color: rgba(255,0,0,0.1);" >красное - не просчитано</div>
+                            <div style="background-color: rgba(255,255,0,0.1);" >жёлтое - заполнено, но не всё</div>
+                            <div style="background-color: rgba(0,255,0,0.1);" >зелёное - посчитано</div>
+                        </small>
+                    </div>
+                </div>
+
+                <div class="col-xs-12 col-sm-9 col-md-10 col-lg-10 col-xl-10" >
+                    {%  set list1 = job_stat__check_ocenka( db, year~'-'~mont~'-05' ) %}
+                    {% include dir_mod_now_mod_ditpl~'body.index.block.htm' %}
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+

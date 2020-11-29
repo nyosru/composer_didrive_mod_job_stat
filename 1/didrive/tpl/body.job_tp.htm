@@ -1,0 +1,65 @@
+<div class="container-fluid">
+    <div class="grid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12" >
+                <div id="body2" ></div>
+
+                    <style>small{ color: gray; }</style>
+                
+                '2020-05-01'
+                <br/>
+                {#- {{ pa(job_stat__round_number(db,'2020-05-01')) }} -#}
+                {#{% set sr =  job_stat__round_number(db,'2020-05-01') %}#}
+                
+                <br/>
+                
+                {% set oborots = 0 %}
+                
+                <table class="table table-striped" >
+                    <thead>
+                        <tr>
+                            <th>ТП</th>
+                            <th>холодный</th>
+                            <th>горячий</th>
+                            <th>доставка</th>
+                            <th>оборот</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sp,v in sr.srednee  %}
+                            <tr>
+                                <td>{{ sr.sps[sp]['head'] }}</td>
+                                <td>
+                                    {{ v['cold'] }}
+                                    <br/><small>{{ v['cold_summ'] }} / {{ v['cold_count'] }} =</small>
+                                </td>
+                                <td>{{ v['hot'] }}
+                                    <br/><small>{{ v['hot_summ'] }} / {{ v['hot_count'] }} =</small>
+                                </td>
+                                <td>{{ v['delivery'] }}
+                                    <br/><small>{{ v['delivery_summ'] }} / {{ v['delivery_count'] }} =</small>
+                                </td>
+                                <td>
+                                    {{ v['oborot']|number_format(1,',','`') }}
+                                    <br/><small>{{ v['oborot_summ']|number_format(1,',','`') }} / {{ v['oborot_count'] }} =</small>
+                                    {% set oborots = oborots + v['oborot_summ']%}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfooter>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>Итого</td>
+                            <td>{{ oborots|number_format(1,',','`') }}</td>
+                        </tr>
+                    </tfooter>
+                </table>
+                
+                
+            </div>
+        </div>
+    </div>
+</div>

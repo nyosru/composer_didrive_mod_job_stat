@@ -1,27 +1,51 @@
-
 <div class="container-fluid">
     <div class="grid">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
 
-        {# list #}
-        
-        {# если редактирование, то показываем форму редактирования #}
-        
-        <p>данных для показа нет</p>
-        
-        {% if 1 == 2 %}
-        
-            {% if get.edit_id is defined and list.data[get.edit_id] is defined %}
+                {% set kk_active = '' %}
 
-                {% include 'vendor/didrive_mod/items/1/didrive/t/body.form_add.htm' %}
+                {% set kk = 'index' %}
+                {% set kk_name = 'Общий обзор' %}
 
-            {% else %}
+                <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                   {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
 
-                {% include 'vendor/didrive_mod/items/1/didrive/t/body.form_add.htm' %}
-                {% include 'vendor/didrive_mod/items/1/didrive/t/body.list_items.htm' %}
+                {% if 1 == 2 %}
+                    
+                    {% set kk = 'oborots_raschet' %}
+                    {% set kk_name = 'подробный расчёт оборотов ТП' %}
 
-            {% endif %}
-        {% endif %}
+                    <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                       {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
 
-        
+                    {% set kk = 'job_tp' %}
+                    {% set kk_name = 'работа ТП' %}
+
+                    <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                       {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
+                       
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 xtext-center">
+
+                {% if kk_active != '' %}
+
+                    {#% set dir_di_mod = constant('dir_site_module_nowlev_tpldidr') %}
+                    {% include dir_di_mod~'body.'~kk_active~'.htm' %#}
+                    {% include dir_mod_now_mod_ditpl~'body.'~kk_active~'.htm' %}
+
+                {% else %}
+
+                    <p>выберите пункт</p>
+
+                {% endif %}
+
+            </div>
+
+        </div>
     </div>
 </div>
+
