@@ -21,9 +21,9 @@ if (isset($skip_start) && $skip_start === true) {
 
 try {
 
-    \f\pa($_REQUEST);
+    //\f\pa($_REQUEST);
     
-    $date = date('Y-m-01', strtotime($_REQUEST['date']));
+    $date = date('Y-m-d', strtotime($_REQUEST['date']));
     $date2 = date('Y-m-d', strtotime($_REQUEST['date2']));
 
     $e = \Nyos\mod\JOB_STAT::getStat($db, $date, $date2 );

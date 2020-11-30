@@ -32,8 +32,8 @@ try {
 
     for ($i = 1; $i <= 5; $i++) {
 
-        $week_start = date('Y-m-d w', strtotime($date0 . ' +' . $i . ' week -1 week'));
-        $week_end = date('Y-m-d w', strtotime($date0 . ' +' . $i . ' week -1 day'));
+        $week_start = date('Y-m-d', strtotime($date0 . ' +' . $i . ' week -1 week'));
+        $week_end = date('Y-m-d', strtotime($date0 . ' +' . $i . ' week -1 day'));
 
         $weeks[] = [$week_start, $week_end];
         // $date0 = date( 'Y-m-d', strtotime($date.' -'.$i.' day') );

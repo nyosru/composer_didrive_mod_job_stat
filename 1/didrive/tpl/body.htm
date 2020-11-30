@@ -6,13 +6,29 @@
                 {% set kk_active = '' %}
 
                 {% set kk = 'index' %}
-                {% set kk_name = 'Общий обзор' %}
+                {% set kk_name = 'Графики месячные' %}
 
                 <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
                    {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
 
                 {% if 1 == 2 %}
                     
+                    {% set kk = 'index_n' %}
+                    {% set kk_name = 'График недельный' %}
+
+                    <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                       {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
+
+                {% endif %}
+
+                {% set kk = 'index2' %}
+                {% set kk_name = 'Общий обзор' %}
+
+                <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
+                   {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
+
+                {% if 1 == 2 %}
+
                     {% set kk = 'oborots_raschet' %}
                     {% set kk_name = 'подробный расчёт оборотов ТП' %}
 
@@ -24,7 +40,7 @@
 
                     <a href="?level={{ get.level }}&option={{ kk }}" class="btn btn-xs 
                        {% if get.option is defined and get.option == kk %} btn-success {% set kk_active = kk %} {% else %} btn-light {% endif %} " >{{ kk_name }}</a>
-                       
+
                 {% endif %}
             </div>
         </div>

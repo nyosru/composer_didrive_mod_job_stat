@@ -54,19 +54,21 @@ class JOB_STAT {
 
     public static function getStat($db, $date, $date_finish = null) {
 
-        $in = [
-            ':date1' => date('Y-m-01', strtotime($date))
-        ];
 
         if (!empty($date_finish)) {
+            $in = [
+                ':date1' => date('Y-m-d', strtotime($date))
+            ];
             $in[':date2'] = date('Y-m-d', strtotime($date_finish));
         } else {
+            $in = [
+                ':date1' => date('Y-m-01', strtotime($date))
+            ];
             $in[':date2'] = date('Y-m-d', strtotime($in[':date1'] . ' +1 month -1 day'));
         }
 
-        
         $ee = self::getStatInDb($db, $in[':date1'], $in[':date2']);
-        if ( !empty($ee) ) {
+        if (!empty($ee)) {
             $ee['saved'] = 'da';
             return $ee;
         }
